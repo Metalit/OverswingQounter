@@ -10,6 +10,7 @@ DECLARE_CLASS_CUSTOM(OverswingQounter, Qounter, QountersMinus::Qounter,
     static float TargetOverswing;
     static float OverswingWarningStrength;
     static float UnderswingWarningStrength;
+    static int SwingTimeTolerance;
     
     DECLARE_STATIC_METHOD(void, Register);
     DECLARE_INSTANCE_METHOD(void, Start);
@@ -18,10 +19,17 @@ DECLARE_CLASS_CUSTOM(OverswingQounter, Qounter, QountersMinus::Qounter,
     DECLARE_INSTANCE_FIELD(TMPro::TextMeshProUGUI*, leftCutText);
     DECLARE_INSTANCE_FIELD(TMPro::TextMeshProUGUI*, rightCutText);
 
+    private:
     struct Swing {
         float bottomSwing, topSwing;
+        float& preSwing(bool swingDirectionUp) { return swingDirectionUp ? bottomSwing : topSwing; }
+        float& postSwing(bool swingDirectionUp) { return swingDirectionUp ? topSwing : bottomSwing; }
     };
     std::vector<Swing> leftSwings, rightSwings;
+    bool lastLeftSwingDirection, lastRightSwingDirection;
+    long lastLeftSwingTime, lastRightSwingTime;
+
+    void handleConnectedSwing(bool swingDirectionUp, bool rightSaber, Swing& swing);
 
     public:
     void AddSwingRatings(bool swingDirectionUp, bool rightSaber, float preSwing, float postSwing);
