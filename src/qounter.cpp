@@ -1,6 +1,10 @@
 #include "main.hpp"
 #include "qounter.hpp"
 
+#include <chrono>
+
+#define NOW std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count()
+
 DEFINE_TYPE(OverswingQounter, Qounter);
 
 using namespace QountersMinus;
@@ -12,6 +16,7 @@ int OQ::DecimalPlaces = 0;
 float OQ::TargetOverswing = 8;
 float OQ::OverswingWarningStrength = 12;
 float OQ::UnderswingWarningStrength = 8;
+int OQ::SwingTimeTolerance = 200; // ms
 
 void OQ::Register() {
     QounterRegistry::Register<OQ>("Overswing", "Overswing Qounter", "OverswingConfig");
@@ -75,7 +80,7 @@ void OQ::Start() {
 void OQ::UpdateSwings() {
     if(!rightSwings.empty()) {
         float rightBottomTotal = 0, rightTopTotal = 0;
-        for(auto& swing : rightSwings) {
+        for(auto swing : rightSwings) {
             rightBottomTotal += swing.bottomSwing;
             rightTopTotal += swing.topSwing;
         }
@@ -85,7 +90,7 @@ void OQ::UpdateSwings() {
     }
     if(!leftSwings.empty()) {
         float leftBottomTotal = 0, leftTopTotal = 0;
-        for(auto& swing : leftSwings) {
+        for(auto swing : leftSwings) {
             leftBottomTotal += swing.bottomSwing;
             leftTopTotal += swing.topSwing;
         }
@@ -95,11 +100,36 @@ void OQ::UpdateSwings() {
     }
 }
 
+void OQ::handleConnectedSwing(bool swingDirectionUp, bool rightSaber, Swing& swing) {
+    // too many cases :(
+    if(rightSaber && NOW - lastRightSwingTime < SwingTimeTolerance) {
+        if(swingDirectionUp == lastRightSwingDirection) {
+            swing.preSwing(swingDirectionUp) = rightSwings.back().preSwing(swingDirectionUp);
+            rightSwings.pop_back();
+        } else {
+            swing.preSwing(swingDirectionUp) = std::min(swing.preSwing(swingDirectionUp), rightSwings.back().postSwing(swingDirectionUp));
+        }
+    } else if(NOW - lastLeftSwingTime < SwingTimeTolerance) {
+        if(swingDirectionUp == lastLeftSwingDirection) {
+            swing.preSwing(swingDirectionUp) = leftSwings.back().preSwing(swingDirectionUp);
+            leftSwings.pop_back();
+        } else {
+            swing.preSwing(swingDirectionUp) = std::min(swing.preSwing(swingDirectionUp), leftSwings.back().postSwing(swingDirectionUp));
+        }
+    }
+}
+
 void OQ::AddSwingRatings(bool swingDirectionUp, bool rightSaber, float preSwing, float postSwing) {
     auto swing = swingDirectionUp ? Swing{preSwing - 70, postSwing - 30} : Swing{postSwing - 30, preSwing - 70};
-    if(rightSaber)
-        rightSwings.push_back(swing);
-    else
-        leftSwings.push_back(swing);
+    handleConnectedSwing(swingDirectionUp, rightSaber, swing);
+    if(rightSaber) {
+        rightSwings.emplace_back(std::move(swing));
+        lastRightSwingDirection = swingDirectionUp;
+        lastRightSwingTime = NOW;
+    } else {
+        leftSwings.emplace_back(std::move(swing));
+        lastLeftSwingDirection = swingDirectionUp;
+        lastLeftSwingTime = NOW;
+    }
     UpdateSwings();
 }
