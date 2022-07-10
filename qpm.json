@@ -1,0 +1,55 @@
+{
+  "sharedDir": "shared",
+  "dependenciesDir": "extern",
+  "info": {
+    "name": "OverswingQounter",
+    "id": "overswingqounter",
+    "version": "0.1.0",
+    "url": null,
+    "additionalData": {
+      "overrideSoName": "liboverswingqounter.so"
+    }
+  },
+  "dependencies": [
+    {
+      "id": "beatsaber-hook",
+      "versionRange": "^3.8.0",
+      "additionalData": {
+        "extraFiles": [
+          "src/inline-hook"
+        ]
+      }
+    },
+    {
+      "id": "modloader",
+      "versionRange": "=1.2.3",
+      "additionalData": {}
+    },
+    {
+      "id": "qounters-minus",
+      "versionRange": "^1.2.0",
+      "additionalData": {}
+    },
+    {
+      "id": "codegen",
+      "versionRange": "^0.24.1",
+      "additionalData": {}
+    },
+    {
+      "id": "overswing",
+      "versionRange": "^0.1.0",
+      "additionalData": {}
+    },
+    {
+      "id": "custom-types",
+      "versionRange": "^0.15.13",
+      "additionalData": {}
+    },
+    {
+      "id": "questui",
+      "versionRange": "^0.16.1",
+      "additionalData": {}
+    }
+  ],
+  "additionalData": {}
+}
