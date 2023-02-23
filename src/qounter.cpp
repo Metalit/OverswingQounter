@@ -109,7 +109,8 @@ void OQ::handleConnectedSwing(bool swingDirectionUp, bool rightSaber, Swing& swi
         } else {
             swing.preSwing(swingDirectionUp) = std::min(swing.preSwing(swingDirectionUp), rightSwings.back().postSwing(swingDirectionUp));
         }
-    } else if(NOW - lastLeftSwingTime < SwingTimeTolerance) {
+    }
+    if(!rightSaber && NOW - lastLeftSwingTime < SwingTimeTolerance) {
         if(swingDirectionUp == lastLeftSwingDirection) {
             swing.preSwing(swingDirectionUp) = leftSwings.back().preSwing(swingDirectionUp);
             leftSwings.pop_back();
