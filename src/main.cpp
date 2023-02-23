@@ -21,7 +21,7 @@ int LerpColor(int hexFrom, int hexTo, float amount) {
         amount = 0;
     if(amount > 1)
         amount = 1;
-    
+
     int ar = hexFrom >> 16,
         ag = hexFrom >> 8 & 0xff,
         ab = hexFrom & 0xff,
@@ -79,7 +79,7 @@ extern "C" void setup(ModInfo& info) {
             qounter->AddSwingRatings(FindSwingDirection(info.scoreBuffer), info.rightSaber, info.preSwing * maxPre, info.postSwing * maxPost);
         }
     });
-	
+
     getLogger().info("Completed setup!");
 }
 

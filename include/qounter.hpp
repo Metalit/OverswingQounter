@@ -11,7 +11,8 @@ DECLARE_CLASS_CUSTOM(OverswingQounter, Qounter, QountersMinus::Qounter,
     static float OverswingWarningStrength;
     static float UnderswingWarningStrength;
     static int SwingTimeTolerance;
-    
+
+    DECLARE_DEFAULT_CTOR();
     DECLARE_STATIC_METHOD(void, Register);
     DECLARE_INSTANCE_METHOD(void, Start);
     DECLARE_INSTANCE_METHOD(void, UpdateSwings);
@@ -27,7 +28,7 @@ DECLARE_CLASS_CUSTOM(OverswingQounter, Qounter, QountersMinus::Qounter,
     };
     std::vector<Swing> leftSwings, rightSwings;
     bool lastLeftSwingDirection, lastRightSwingDirection;
-    long lastLeftSwingTime, lastRightSwingTime;
+    long lastLeftSwingTime = 0, lastRightSwingTime = 0;
 
     void handleConnectedSwing(bool swingDirectionUp, bool rightSaber, Swing& swing);
 
